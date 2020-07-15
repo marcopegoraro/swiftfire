@@ -3,8 +3,7 @@ from swiftfire.artifacts.graphs.swiftfire_graph import SwiftFireGraph
 
 class PetriNet:
 
-    def __init__(self, name='', places=0, transitions=0, arcs=None, inhibitor_arcs=None, reset_arcs=None):
-        self.__name = '' if name is None else properties
+    def __init__(self, places=0, transitions=0, arcs=None, inhibitor_arcs=None, reset_arcs=None):
         if arcs is None:
             self.__graph = SwiftFireGraph([0] * places + [1] * transitions, [])
         else:
