@@ -1,4 +1,6 @@
 from swiftfire.artifacts.graphs.swiftfire_graph import SwiftFireGraph
+from swiftfire.semantics.enablement_rules import petrinet_enablement_rules
+from swiftfire.semantics.firing_rules import petrinet_firing_rules
 
 
 class PetriNet:
@@ -10,6 +12,8 @@ class PetriNet:
             self.__graph = SwiftFireGraph([0] * places + [1] * transitions, arcs)
         self.__inhibitor_arcs = set() if inhibitor_arcs is None else inhibitor_arcs
         self.__reset_arcs = set() if reset_arcs is None else reset_arcs
+        self.__enablement_rule = petrinet_enablement_rules.EnablementRule if inhibitor_arcs is None else petrinet_enablement_rules.EnablementRuleInhibitorArcs
+        self.__firing_rule = petrinet_firing_rules.FiringRule if reset_arcs is None else petrinet_firing_rules.FiringRuleResetArcs
 
     def __getitem__(self, key):
         return self.__graph[key]
