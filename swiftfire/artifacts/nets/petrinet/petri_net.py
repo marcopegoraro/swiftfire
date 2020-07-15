@@ -19,6 +19,9 @@ class PetriNet:
     def __setitem__(self, key, value):
         self.__graph[key] = value
 
+    def __delitem__(self, key):
+        del self.__graph[key]
+
     def update(self, *args, **kwargs):
         for key, value in dict(*args, **kwargs).items():
             self.__graph[key] = value
