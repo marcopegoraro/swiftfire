@@ -12,3 +12,13 @@ class PetriNet:
         self.__inhibitor_arcs = set() if inhibitor_arcs is None else inhibitor_arcs
         self.__reset_arcs = set() if reset_arcs is None else reset_arcs
         self.__properties = dict() if properties is None else properties
+
+    def __getitem__(self, key):
+        return self.__graph[key]
+
+    def __setitem__(self, key, value):
+        self.__graph[key] = value
+
+    def update(self, *args, **kwargs):
+        for key, value in dict(*args, **kwargs).items():
+            self.__graph[key] = value
