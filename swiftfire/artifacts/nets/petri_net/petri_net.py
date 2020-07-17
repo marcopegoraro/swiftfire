@@ -69,7 +69,7 @@ class PetriNet:
                 return True
         return False
 
-    def add_place(self, **kwds):
+    def add_place(self):
         self.__graph.add_node(type=0)
         self.__places.append(len(self.__graph.vs))
 
