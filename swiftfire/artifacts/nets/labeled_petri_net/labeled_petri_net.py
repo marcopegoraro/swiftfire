@@ -1,5 +1,6 @@
 from swiftfire.artifacts.nets.petri_net.petri_net import PetriNet
 
+
 class LabeledPetriNet(PetriNet):
 
     def add_place(self, **kwds):
