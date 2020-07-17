@@ -10,8 +10,8 @@ class PetriNet:
             self.__graph = SwiftFireGraph([0] * places + [1] * transitions, [])
         else:
             self.__graph = SwiftFireGraph([0] * places + [1] * transitions, arcs)
-        self.__places = list(range(places))
-        self.__transitions = list(range(places, places + transitions))
+        self.__places = set(range(places))
+        self.__transitions = set(range(places, places + transitions))
         self.__inhibitor_arcs = set() if inhibitor_arcs is None else inhibitor_arcs
         self.__reset_arcs = set() if reset_arcs is None else reset_arcs
         self.__enablement_rule = petri_net_enablement_rules.EnablementRule if inhibitor_arcs is None else petri_net_enablement_rules.EnablementRuleInhibitorArcs
@@ -71,7 +71,7 @@ class PetriNet:
 
     def add_place(self):
         self.__graph.add_node(type=0)
-        self.__places.append(len(self.__graph.vs))
+        self.__places.add(len(self.__graph.vs))
 
     def add_places(self, n):
         for i in range(n):
@@ -85,7 +85,7 @@ class PetriNet:
 
     def add_transition(self):
         self.__graph.add_node(type=1)
-        self.__transitions.append(len(self.__graph.vs))
+        self.__transitions.add(len(self.__graph.vs))
 
     def add_transitions(self, n):
         for i in range(n):
