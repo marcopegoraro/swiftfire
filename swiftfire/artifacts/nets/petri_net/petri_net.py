@@ -45,6 +45,8 @@ class PetriNet:
         self.__firing_rule = firing_rule
 
     graph = property(__get_graph)
+    places = property(__get_places)
+    transitions = property(__get_transitions)
     inhibitor_arcs = property(__get_inhibitor_arcs)
     reset_arcs = property(__get_reset_arcs)
     enablement_rule = property(__get_enablement_rule, __set_enablement_rule)
