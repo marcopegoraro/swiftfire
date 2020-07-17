@@ -1,6 +1,6 @@
 from swiftfire.artifacts.graphs.swiftfire_graph import SwiftFireGraph
-from swiftfire.semantics.enablement_rules import petrinet_enablement_rules
-from swiftfire.semantics.firing_rules import petrinet_firing_rules
+from swiftfire.semantics.enablement_rules import petri_net_enablement_rules
+from swiftfire.semantics.firing_rules import petri_net_firing_rules
 
 
 class PetriNet:
@@ -14,8 +14,8 @@ class PetriNet:
         self.__transitions = list(range(places, places + transitions))
         self.__inhibitor_arcs = set() if inhibitor_arcs is None else inhibitor_arcs
         self.__reset_arcs = set() if reset_arcs is None else reset_arcs
-        self.__enablement_rule = petrinet_enablement_rules.EnablementRule if inhibitor_arcs is None else petrinet_enablement_rules.EnablementRuleInhibitorArcs
-        self.__firing_rule = petrinet_firing_rules.FiringRule if reset_arcs is None else petrinet_firing_rules.FiringRuleResetArcs
+        self.__enablement_rule = petri_net_enablement_rules.EnablementRule if inhibitor_arcs is None else petri_net_enablement_rules.EnablementRuleInhibitorArcs
+        self.__firing_rule = petri_net_firing_rules.FiringRule if reset_arcs is None else petri_net_firing_rules.FiringRuleResetArcs
 
     def __get_graph(self):
         return self.__graph
@@ -70,8 +70,8 @@ class PetriNet:
         return False
 
     def add_place(self, **kwds):
-        kwds['type'] = 0
-        self.__graph.add_node(**kwds)
+        self.__graph.add_node(type=0)
+        self.__places.append(len(self.__graph.vs))
 
     def add_places(self, n):
         for i in range(n):
@@ -83,16 +83,16 @@ class PetriNet:
                 return True
         return False
 
-    def add_transition(self, **kwds):
-        kwds['type'] = 1
-        self.__graph.add_node(**kwds)
+    def add_transition(self):
+        self.__graph.add_node(type=1)
+        self.__transitions.append(len(self.__graph.vs))
 
     def add_transitions(self, n):
         for i in range(n):
             self.add_transition()
 
-    def add_edge(self, source, target, **kwds):
-        self.__graph.add_edge(source, target, **kwds)
+    def add_edge(self, source, target):
+        self.__graph.add_edge(source, target)
 
     def is_a_marking(self, marking):
         for place, tokens in marking.items():
