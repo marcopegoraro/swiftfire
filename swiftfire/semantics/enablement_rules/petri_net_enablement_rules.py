@@ -3,7 +3,7 @@ class EnablementRule:
     @staticmethod
     def is_enabled(net, marking, transition):
         for place in net.preset(transition):
-            if marking[place] < 1:
+            if place not in marking or marking[place] < 1:
                 return False
         return True
 
