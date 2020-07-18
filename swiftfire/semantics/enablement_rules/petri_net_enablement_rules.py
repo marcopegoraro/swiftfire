@@ -12,4 +12,5 @@ class EnablementRule:
 
 class EnablementRuleInhibitorArcs(EnablementRule):
     def enabled_transitions(self, net, marking):
+        # TODO: implement
         pass
