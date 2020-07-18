@@ -1,3 +1,5 @@
+from itertools import islice
+
 from swiftfire.artifacts.graphs.swiftfire_graph import SwiftFireGraph
 from swiftfire.semantics.enablement_rules import petri_net_enablement_rules
 from swiftfire.semantics.firing_rules import petri_net_firing_rules
@@ -64,6 +66,20 @@ class PetriNet:
     def update(self, *args, **kwargs):
         for key, value in dict(*args, **kwargs).items():
             self.__graph[key] = value
+
+    def preset(self, input_value):
+        if isinstance(input_value, int):
+            return self.__graph.neighbors(input_value, mode='in')
+        else:
+            presets_list = [self.__graph.neighbors(node, mode='in') for node in input_value]
+            return set.union(set(presets_list[0]), *islice(presets_list, 1, None))
+
+    def postset(self, input_value):
+        if isinstance(input_value, int):
+            return self.__graph.neighbors(input_value, mode='out')
+        else:
+            postsets_list = [self.__graph.neighbors(node, mode='out') for node in input_value]
+            return set.union(set(postsets_list[0]), *islice(postsets_list, 1, None))
 
     def is_a_place(self, place_id):
         if place_id in self.__graph:
