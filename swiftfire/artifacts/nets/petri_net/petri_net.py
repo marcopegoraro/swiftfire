@@ -126,18 +126,3 @@ class PetriNet:
             if not self.is_a_place(place) or not isinstance(tokens, int) or tokens < 0:
                 return False
         return True
-
-
-if __name__ == '__main__':
-    pn = PetriNet(places=6, transitions=3, arcs=[(0, 6), (1, 6), (2, 6), (6, 3), (6, 4), (3, 7), (4, 8), (7, 5), (8, 5)])
-    print(pn.graph)
-    print(pn.graph.nodes)
-    print(pn.graph.arcs)
-    print(pn.graph.is_bipartite())
-    pn['type'] = 'tette'
-    print(pn['type'])
-    print([pn.is_a_place(node) for node in range(len(pn.graph.nodes))])
-    print([pn.is_a_transition(node) for node in range(len(pn.graph.nodes))])
-    print(pn.places)
-    print(pn.transitions)
-    m1 = {0: 2, 1: 2, 2: 3}
