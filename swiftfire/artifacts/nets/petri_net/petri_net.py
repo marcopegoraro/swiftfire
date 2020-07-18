@@ -69,51 +69,75 @@ class PetriNet:
 
     def preset(self, input_value):
         if isinstance(input_value, int):
-            return self.__graph.neighbors(input_value, mode='in')
+            return set(self.__graph.neighbors(input_value, mode='in'))
         else:
             presets_list = [self.__graph.neighbors(node, mode='in') for node in input_value]
             return set.union(set(presets_list[0]), *islice(presets_list, 1, None))
 
     def postset(self, input_value):
         if isinstance(input_value, int):
-            return self.__graph.neighbors(input_value, mode='out')
+            return set(self.__graph.neighbors(input_value, mode='out'))
         else:
             postsets_list = [self.__graph.neighbors(node, mode='out') for node in input_value]
             return set.union(set(postsets_list[0]), *islice(postsets_list, 1, None))
 
     def is_a_place(self, place_id):
-        if place_id in self.__graph:
-            if not self.__graph[place_id]['type']:
+        if isinstance(place_id, int) and place_id < len(self.__graph.nodes):
+            if not self.__graph.nodes[place_id]['type']:
                 return True
         return False
 
     def add_place(self):
-        self.__graph.add_node(type=0)
-        self.__places.add(len(self.__graph.vs))
+        self.__graph.add_vertex(type=0)
+        self.__places.add(len(self.__graph.vs) - 1)
 
     def add_places(self, n):
         for i in range(n):
             self.add_place()
 
     def is_a_transition(self, transition_id):
-        if transition_id in self.__graph:
-            if self.__graph[transition_id]['type']:
+        if isinstance(transition_id, int) and transition_id < len(self.__graph.nodes):
+            if self.__graph.nodes[transition_id]['type']:
                 return True
         return False
 
     def add_transition(self):
-        self.__graph.add_node(type=1)
-        self.__transitions.add(len(self.__graph.vs))
+        self.__graph.add_vertex(type=1)
+        self.__transitions.add(len(self.__graph.vs) - 1)
 
     def add_transitions(self, n):
         for i in range(n):
             self.add_transition()
 
-    def add_edge(self, source, target):
+    def add_arc(self, source, target):
+        if self.__graph.nodes[source]['type'] == self.__graph.nodes[target]['type']:
+            raise ValueError('Arc connecting two places or two transitions.')
         self.__graph.add_edge(source, target)
+
+    def add_arcs(self, arcs):
+        for arc in arcs:
+            if self.__graph.nodes[arc[0]]['type'] == self.__graph.nodes[arc[1]]['type']:
+                raise ValueError('Arc connecting two places or two transitions.')
+        for arc in arcs:
+            self.add_arc(arc[0], arc[1])
 
     def is_a_marking(self, marking):
         for place, tokens in marking.items():
             if not self.is_a_place(place) or not isinstance(tokens, int) or tokens < 0:
                 return False
         return True
+
+
+if __name__ == '__main__':
+    pn = PetriNet(places=6, transitions=3, arcs=[(0, 6), (1, 6), (2, 6), (6, 3), (6, 4), (3, 7), (4, 8), (7, 5), (8, 5)])
+    print(pn.graph)
+    print(pn.graph.nodes)
+    print(pn.graph.arcs)
+    print(pn.graph.is_bipartite())
+    pn['type'] = 'tette'
+    print(pn['type'])
+    print([pn.is_a_place(node) for node in range(len(pn.graph.nodes))])
+    print([pn.is_a_transition(node) for node in range(len(pn.graph.nodes))])
+    print(pn.places)
+    print(pn.transitions)
+    m1 = {0: 2, 1: 2, 2: 3}

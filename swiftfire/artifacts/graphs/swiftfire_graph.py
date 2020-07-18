@@ -1,10 +1,14 @@
-import igraph
+from igraph import Graph
 
 
-class SwiftFireGraph(igraph.Graph.Bipartite):
+class SwiftFireGraph(Graph):
 
     def __init__(self, node_types, arcs):
-        super().__init__(node_types, arcs, directed=True)
+        for arc in arcs:
+            if node_types[arc[0]] == node_types[arc[1]]:
+                raise ValueError('Arc connecting two places or two transitions.')
+        super().__init__(len(node_types), arcs, directed=True)
+        self.vs['type'] = node_types
         self.__nodes = self.vs
         self.__arcs = self.es
 
