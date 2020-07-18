@@ -4,7 +4,9 @@ class TransitionNotEnabledError(ValueError):
 
 
 class FiringRule:
-    def fire(self, net, marking, transition):
+
+    @staticmethod
+    def fire(net, marking, transition):
         if net.enablement_rule.is_enabled(net, transition, marking):
             for place in net.preset(transition):
                 marking[place] -= 1
@@ -16,6 +18,8 @@ class FiringRule:
 
 
 class FiringRuleResetArcs(FiringRule):
-    def fire(self, net, marking, transition):
+
+    @staticmethod
+    def fire(net, marking, transition):
         # TODO: implement
         raise NotImplementedError
