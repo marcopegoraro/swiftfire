@@ -1,4 +1,4 @@
-from itertools import islice
+from itertools import repeat, islice
 
 from swiftfire.artifacts.graphs.swiftfire_graph import SwiftFireGraph
 from swiftfire.semantics.enablement_rules import petri_net_enablement_rules
@@ -71,15 +71,23 @@ class PetriNet:
         if isinstance(input_value, int):
             return set(self.__graph.neighbors(input_value, mode='in'))
         else:
-            presets_list = [self.__graph.neighbors(node, mode='in') for node in input_value]
-            return set.union(set(presets_list[0]), *islice(presets_list, 1, None))
+            global_postset = set()
+            # Efficient equivalent of:
+            # for postset in [self.__graph.neighbors(node, mode='out') for node in input_value]
+            for postset in map(self.__graph.neighbors, input_value, repeat('in')):
+                global_postset.update(postset)
+            return global_postset
 
     def postset(self, input_value):
         if isinstance(input_value, int):
             return set(self.__graph.neighbors(input_value, mode='out'))
         else:
-            postsets_list = [self.__graph.neighbors(node, mode='out') for node in input_value]
-            return set.union(set(postsets_list[0]), *islice(postsets_list, 1, None))
+            global_postset = set()
+            # Efficient equivalent of:
+            # for postset in [self.__graph.neighbors(node, mode='out') for node in input_value]
+            for postset in map(self.__graph.neighbors, input_value, repeat('out')):
+                global_postset.update(postset)
+            return global_postset
 
     def is_a_place(self, place_id):
         if isinstance(place_id, int) and place_id < len(self.__graph.nodes):
