@@ -1,4 +1,4 @@
-from itertools import repeat, islice
+from itertools import repeat
 
 from swiftfire.artifacts.graphs.swiftfire_graph import SwiftFireGraph
 from swiftfire.semantics.enablement_rules import petri_net_enablement_rules
