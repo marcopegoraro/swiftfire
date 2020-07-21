@@ -191,7 +191,7 @@ class PetriNet(dict):
     def add_arcs(self, arcs: Iterable[Tuple[int, int]]):
         """
         Adds multiple arcs to the Petri net.
-        :param arcs: the arcs to be added - a list of 2-uples (source id, target id)
+        :param arcs: the arcs to be added - an iterable of 2-uples (source id, target id)
         :type arcs: iterable of 2-uples of integers
         :return: None
         :rtype: NoneType
