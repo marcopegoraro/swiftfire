@@ -1,4 +1,4 @@
-from typing import List, Iterable, Tuple
+from typing import Sequence, Iterable, Tuple
 from igraph import Graph
 
 
@@ -7,11 +7,11 @@ class SwiftFireGraph(Graph):
     Class defining a directed bipartite graph extended from the Graph class of the igraph package.
     """
 
-    def __init__(self, node_types: List[int], arcs: Iterable[Tuple[int, int]]):
+    def __init__(self, node_types: Sequence[int], arcs: Iterable[Tuple[int, int]]):
         """
         Constructor for the directed bipartite graph defined by the SwiftFireGraph class.
-        :param node_types: list of integers, identifying the two partitions of nodes
-        :type node_types: list of integers (either 0s or 1s)
+        :param node_types: sequence of integers, identifying the two partitions of nodes
+        :type node_types: sequence of integers (either 0s or 1s)
         :param arcs: list of arcs of the graph (pairs of node ids)
         :type arcs: iterable of 2-uples of integers
         """
