@@ -5,7 +5,7 @@ from swiftfire.artifacts.nets.labeled_petri_net import labeled_petri_net
 from swiftfire.identifiers import LABEL_ID
 
 
-class LabeledPetriNetFiringRule:
+class LabeledPetriNetFiringRule(petri_net_firing_rules.FiringRule):
     """
     Class defining the firing rule of a Petri net.
     """
