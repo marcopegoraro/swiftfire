@@ -29,14 +29,8 @@ class SwiftFireGraph(Graph):
     def __get_nodes(self):
         return self.__nodes
 
-    def __set_nodes(self, nodes):
-        self.__nodes = nodes
-
     def __get_arcs(self):
         return self.__arcs
 
-    def __set_arcs(self, arcs):
-        self.__arcs = arcs
-
-    nodes = property(__get_nodes, __set_nodes)
-    arcs = property(__get_arcs, __set_arcs)
+    nodes = property(__get_nodes)
+    arcs = property(__get_arcs)
