@@ -1,6 +1,8 @@
 from typing import Union, Sequence, Any, Iterable, Tuple
 
 from swiftfire.artifacts.nets.petri_net import petri_net
+from swiftfire.semantics.enablement_rules import petri_net_enablement_rules
+from swiftfire.semantics.firing_rules import labeled_petri_net_firing_rules
 from swiftfire.identifiers import LABEL_ID
 
 
@@ -15,6 +17,11 @@ class LabeledPetriNet(petri_net.PetriNet):
         else:
             super(LabeledPetriNet, self).__init__(places, len(transitions), arcs, inhibitor_arcs, reset_arcs)
             self.graph.nodes[self.transitions][label_id] = transitions
+        self.__enablement_rule = petri_net_enablement_rules.EnablementRule if inhibitor_arcs is None else petri_net_enablement_rules.EnablementRuleInhibitorArcs
+        self.__firing_rule = labeled_petri_net_firing_rules.LabeledPetriNetFiringRuleResetArcs if reset_arcs is None else labeled_petri_net_firing_rules.LabeledPetriNetFiringRule
+
+    def __set_firing_rule(self, firing_rule: labeled_petri_net_firing_rules.LabeledPetriNetFiringRule = labeled_petri_net_firing_rules.LabeledPetriNetFiringRuleResetArcs):
+        self.__firing_rule = firing_rule
 
     def add_place(self, **kwds: Any):
         """

@@ -54,13 +54,13 @@ class PetriNet(dict):
     def __get_enablement_rule(self):
         return self.__enablement_rule
 
-    def __set_enablement_rule(self, enablement_rule: petri_net_enablement_rules.EnablementRule):
+    def __set_enablement_rule(self, enablement_rule: petri_net_enablement_rules.EnablementRule = petri_net_enablement_rules.EnablementRuleInhibitorArcs):
         self.__enablement_rule = enablement_rule
 
     def __get_firing_rule(self):
         return self.__firing_rule
 
-    def __set_firing_rule(self, firing_rule: petri_net_firing_rules.FiringRule):
+    def __set_firing_rule(self, firing_rule: petri_net_firing_rules.FiringRule = petri_net_firing_rules.FiringRuleResetArcs):
         self.__firing_rule = firing_rule
 
     graph = property(__get_graph)
