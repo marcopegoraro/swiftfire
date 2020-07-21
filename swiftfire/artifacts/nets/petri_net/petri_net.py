@@ -80,15 +80,7 @@ class PetriNet(dict):
         :return: the set of node ids in the preset of the input
         :rtype: set of integers
         """
-        if isinstance(input_value, int):
-            return set(self.__graph.neighbors(input_value, mode='in'))
-        else:
-            global_postset = set()
-            # Efficient equivalent of:
-            # for postset in [self.__graph.neighbors(node, mode='out') for node in input_value]
-            for postset in map(self.__graph.neighbors, input_value, repeat('in')):
-                global_postset.update(postset)
-            return global_postset
+        return self.__graph.neighbors(input_value, mode='in')
 
     def postset(self, input_value: Union[int, Iterable[int]]) -> Set[int]:
         """
@@ -98,15 +90,7 @@ class PetriNet(dict):
         :return: the set of node ids in the postset of the input
         :rtype: set of integers
         """
-        if isinstance(input_value, int):
-            return set(self.__graph.neighbors(input_value, mode='out'))
-        else:
-            global_postset = set()
-            # Efficient equivalent of:
-            # for postset in [self.__graph.neighbors(node, mode='out') for node in input_value]
-            for postset in map(self.__graph.neighbors, input_value, repeat('out')):
-                global_postset.update(postset)
-            return global_postset
+        return self.__graph.neighbors(input_value, mode='out')
 
     def is_a_place(self, place_id: int) -> bool:
         """
