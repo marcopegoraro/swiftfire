@@ -11,7 +11,7 @@ class LabeledPetriNetFiringRule:
     """
 
     @staticmethod
-    def fire(net: labeled_petri_net.LabeledPetriNet, marking: Dict[int, int], transition: int, label_id: str = LABEL_ID, f: Callable = None) -> Tuple[Dict[int, int], Any]:
+    def fire(net: labeled_petri_net.LabeledPetriNet, marking: Dict[int, int], transition: int, label_id: str = LABEL_ID, on_fire_function: Callable = None) -> Tuple[Dict[int, int], Any]:
         """
         Method that fires an enabled transitions given a Petri net and a marking, and returns the resulting marking.
         :param net: a labeled Petri net
@@ -22,8 +22,8 @@ class LabeledPetriNetFiringRule:
         :type transition: int
         :param label_id: the label identifier
         :type label_id: string
-        :param f: a function applied on the transition label
-        :type f: callable
+        :param on_fire_function: a function applied on the transition label
+        :type on_fire_function: callable
         :return: the marking resulting from firing the transition in the given Petri net and the label of the fired transition
         :rtype: dictionary of integer: integer
         """
@@ -35,10 +35,10 @@ class LabeledPetriNetFiringRule:
                     marking[place] += 1
                 else:
                     marking[place] = 1
-            if f is None:
+            if on_fire_function is None:
                 return marking, net.graph.nodes[transition][label_id]
             else:
-                return marking, f(net.graph.nodes[transition][label_id])
+                return marking, on_fire_function(net.graph.nodes[transition][label_id])
         else:
             raise petri_net_firing_rules.TransitionNotEnabledError(f'Transition {transition} is not enabled.')
 
@@ -49,7 +49,7 @@ class LabeledPetriNetFiringRuleResetArcs(LabeledPetriNetFiringRule):
     """
 
     @staticmethod
-    def fire(net: labeled_petri_net.LabeledPetriNet, marking: Dict[int, int], transition: int, label_id: str = LABEL_ID, f: Callable = None) -> Tuple[Dict[int, int], Any]:
+    def fire(net: labeled_petri_net.LabeledPetriNet, marking: Dict[int, int], transition: int, label_id: str = LABEL_ID, on_fire_function: Callable = None) -> Tuple[Dict[int, int], Any]:
         """
         Method that fires an enabled transitions given a Petri net and a marking, and returns the resulting marking.
         :param net: a labeled Petri net
@@ -60,8 +60,8 @@ class LabeledPetriNetFiringRuleResetArcs(LabeledPetriNetFiringRule):
         :type transition: int
         :param label_id: the label identifier
         :type label_id: string
-        :param f: a function applied on the transition label
-        :type f: callable
+        :param on_fire_function: a function applied on the transition label
+        :type on_fire_function: callable
         :return: the marking resulting from firing the transition in the given Petri net and the label of the fired transition
         :rtype: dictionary of integer: integer
         """
