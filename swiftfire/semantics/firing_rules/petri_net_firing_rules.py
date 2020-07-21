@@ -39,7 +39,7 @@ class FiringRule:
                     marking[place] = 1
             return marking
         else:
-            raise TransitionNotEnabledError()
+            raise TransitionNotEnabledError(f'Transition {transition} is not enabled.')
 
 
 class FiringRuleResetArcs(FiringRule):
