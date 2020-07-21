@@ -60,8 +60,12 @@ class SystemNet(labeled_petri_net.LabeledPetriNet):
                 raise ValueError('One or more final markings not valid.')
         self.__final_markings = map(defaultdict, repeat(int), final_markings)
 
+    def __get_configurations(self):
+        return self.__configurations
+
     initial_marking = property(__get_initial_marking, __set_initial_marking)
     final_markings = property(__get_final_markings, __set_final_markings)
+    configurations = property(__get_configurations)
 
     def add_configuration(self, configuration_id: str, initial_marking: Dict[int, int], final_markings: Iterable[Dict[int, int]]):
         """
@@ -97,3 +101,24 @@ class SystemNet(labeled_petri_net.LabeledPetriNet):
                 if not self.is_a_marking(marking):
                     raise ValueError('One or more final markings not valid.')
             self.__configurations[configuration_id] = [initial_marking, self.__enablement_rule.enabled_transitions(self, initial_marking), map(defaultdict, repeat(int), final_markings)]
+
+    def delete_configuration(self, configuration_id: str):
+        """
+        Deletes a configuration from the configuration dictionary of the system net.
+        :param configuration_id: the identifier of the configuration to delete
+        :type configuration_id: string
+        :return: None
+        :rtype: NoneType
+        """
+        del self.__configurations[configuration_id]
+
+    def delete_configurations(self, configurations: Iterable[str]):
+        """
+        Deletes an iterable of configurations from the configuration dictionary of the system net.
+        :param configurations: an iterable of configuration identifiers
+        :type configurations: iterable of strings
+        :return: None
+        :rtype: NoneType
+        """
+        for configuration_id in configurations:
+            self.delete_configuration(configuration_id)
