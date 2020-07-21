@@ -1,4 +1,6 @@
-from typing import Sequence, Iterable, Tuple
+from typing import Sequence, Iterable, Tuple, Union, Set
+from itertools import repeat
+
 from igraph import Graph
 
 
@@ -34,3 +36,25 @@ class SwiftFireGraph(Graph):
 
     nodes = property(__get_nodes)
     arcs = property(__get_arcs)
+
+    # TODO: move here the definitions of neighbors on containers of nodes for the preset and postset methods of PetriNet
+
+    def neighbors(self, input_value: Union[int, Iterable[int]], mode: str = 'all') -> Set[int]:
+        """
+        Overridden version of the neighbors function, which also works on iterables of nodes
+        :param input_value: a node or an iterable of nodes
+        :type input_value: integer or iterable of integers
+        :param mode: the arc direction to use to fetch neighbors
+        :type mode: string ('in', 'out' or 'all')
+        :return: the set of neighbors in the graph of the given node(s)
+        :rtype: set of integers
+        """
+        if isinstance(input_value, int):
+            return set(super().neighbors(input_value, mode=mode))
+        else:
+            global_postset = set()
+            # Efficient equivalent of:
+            # for postset in [self.__graph.neighbors(node, mode='out') for node in input_value]
+            for postset in map(self.neighbors, input_value, repeat(mode)):
+                global_postset.update(postset)
+            return global_postset
