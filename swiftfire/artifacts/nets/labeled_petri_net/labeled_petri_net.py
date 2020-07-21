@@ -1,12 +1,20 @@
-from typing import Any
+from typing import Union, Sequence, Any, Iterable, Tuple
 
-from swiftfire.artifacts.nets.petri_net.petri_net import PetriNet
+from swiftfire.artifacts.nets.petri_net import petri_net
+from swiftfire.identifiers import LABEL_ID
 
 
-class LabeledPetriNet(PetriNet):
+class LabeledPetriNet(petri_net.PetriNet):
     """
     Class defining a labeled Petri net.
     """
+
+    def __init__(self, places: int = 0, transitions: Union[int, Sequence[Any]] = 0, arcs: Iterable[Tuple[int, int]] = None, inhibitor_arcs: Iterable[Tuple[int, int]] = None, reset_arcs: Iterable[Tuple[int, int]] = None, label_id: str = LABEL_ID):
+        if isinstance(transitions, int):
+            super(LabeledPetriNet, self).__init__(places, transitions, arcs, inhibitor_arcs, reset_arcs)
+        else:
+            super(LabeledPetriNet, self).__init__(places, len(transitions), arcs, inhibitor_arcs, reset_arcs)
+            self.graph.nodes[self.transitions][label_id] = transitions
 
     def add_place(self, **kwds: Any):
         """
