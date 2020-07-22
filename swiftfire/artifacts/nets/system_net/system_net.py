@@ -24,6 +24,7 @@ class SystemNet(labeled_petri_net.LabeledPetriNet):
         :param reset_arcs: the reset arcs in the net
         :type reset_arcs: iterable of 2-uples of integers
         """
+        # TODO: consider having a separate attribute current_marking, obtained as deepcopy of initial_marking (which stays constant)
         super().__init__(places, transitions, arcs, inhibitor_arcs, reset_arcs)
         # if not self.is_a_marking(initial_marking):
         #     raise ValueError('Initial marking not valid.')
@@ -36,6 +37,7 @@ class SystemNet(labeled_petri_net.LabeledPetriNet):
         #     self.__initial_marking = defaultdict(int, initial_marking)
         # self.__final_markings = map(defaultdict, repeat(int), final_markings)
         self.initial_marking = initial_marking
+        self.marking = self.initial_marking
         self.final_markings = final_markings
         self.__enabled_transitions = self.__enablement_rule.enabled_transitions(self, self.__initial_marking)
         self.__configurations = dict()
@@ -51,6 +53,12 @@ class SystemNet(labeled_petri_net.LabeledPetriNet):
         else:
             self.__initial_marking = defaultdict(int, initial_marking)
 
+    def __get_marking(self):
+        return self.__marking
+
+    def __set_marking(self, marking: Dict[int, int] = None):
+        self.__marking = defaultdict(int, marking)
+
     def __get_final_markings(self):
         return self.__initial_marking
 
@@ -64,10 +72,11 @@ class SystemNet(labeled_petri_net.LabeledPetriNet):
         return self.__configurations
 
     initial_marking = property(__get_initial_marking, __set_initial_marking)
+    marking = property(__get_marking, __set_marking)
     final_markings = property(__get_final_markings, __set_final_markings)
     configurations = property(__get_configurations)
 
-    def add_configuration(self, configuration_id: str, initial_marking: Dict[int, int], final_markings: Iterable[Dict[int, int]]):
+    def add_configuration(self, configuration_id: str, marking: Dict[int, int], final_markings: Iterable[Dict[int, int]]):
         """
         Adds a configuration to the configuration dictionary of the system net.
         :param configuration_id: the identifier of the configuration to add
@@ -79,7 +88,7 @@ class SystemNet(labeled_petri_net.LabeledPetriNet):
         :return: None
         :rtype: NoneType
         """
-        self.add_configurations([(configuration_id, initial_marking, final_markings)])
+        self.add_configurations([(configuration_id, marking, final_markings)])
 
     def add_configurations(self, configurations: Iterable[Tuple[str, Dict[int, int], Iterable[Dict[int, int]]]]):
         """
@@ -89,18 +98,18 @@ class SystemNet(labeled_petri_net.LabeledPetriNet):
         :return: None
         :rtype: NoneType
         """
-        for configuration_id, initial_marking, final_markings in configurations:
+        for configuration_id, marking, final_markings in configurations:
             if configuration_id is None or configuration_id is '':
                 raise ValueError('Configuration id must be a nonempty string.')
             for c_id in self.__configurations:
                 if c_id == configuration_id:
                     raise ValueError('Configuration identifier already in use.')
-            if not self.is_a_marking(initial_marking):
+            if not self.is_a_marking(marking):
                 raise ValueError('Initial marking not valid.')
             for marking in final_markings:
                 if not self.is_a_marking(marking):
                     raise ValueError('One or more final markings not valid.')
-            self.__configurations[configuration_id] = [initial_marking, self.__enablement_rule.enabled_transitions(self, initial_marking), map(defaultdict, repeat(int), final_markings)]
+            self.__configurations[configuration_id] = [marking, self.__enablement_rule.enabled_transitions(self, marking), map(defaultdict, repeat(int), final_markings)]
 
     def delete_configuration(self, configuration_id: str):
         """
