@@ -106,8 +106,8 @@ class SystemNet(labeled_petri_net.LabeledPetriNet):
                     raise ValueError('Configuration identifier already in use.')
             if not self.is_a_marking(marking):
                 raise ValueError('Initial marking not valid.')
-            for marking in final_markings:
-                if not self.is_a_marking(marking):
+            for final_marking in final_markings:
+                if not self.is_a_marking(final_marking):
                     raise ValueError('One or more final markings not valid.')
             self.__configurations[configuration_id] = [marking, self.__enablement_rule.enabled_transitions(self, marking), map(defaultdict, repeat(int), final_markings)]
 
