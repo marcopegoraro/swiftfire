@@ -27,20 +27,10 @@ class LabeledPetriNetFiringRule(petri_net_firing_rules.FiringRule):
         :return: the marking resulting from firing the transition in the given Petri net and the label of the fired transition
         :rtype: dictionary of integer: integer
         """
-        if net.enablement_rule.is_enabled(net, marking, transition):
-            for place in net.preset(transition):
-                marking[place] -= 1
-            for place in net.postset(transition):
-                if place in marking:
-                    marking[place] += 1
-                else:
-                    marking[place] = 1
-            if on_fire_function is None:
-                return marking, net.graph.nodes[transition][label_id]
-            else:
-                return marking, on_fire_function(net.graph.nodes[transition][label_id])
+        if on_fire_function is None:
+            return super().fire(net, marking, transition), net.graph.nodes[transition][label_id]
         else:
-            raise petri_net_firing_rules.TransitionNotEnabledError(f'Transition {transition} is not enabled.')
+            return super().fire(net, marking, transition), on_fire_function(net.graph.nodes[transition][label_id])
 
 
 class LabeledPetriNetFiringRuleResetArcs(LabeledPetriNetFiringRule):
