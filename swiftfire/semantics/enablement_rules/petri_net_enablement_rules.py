@@ -1,4 +1,4 @@
-from typing import Dict, Set
+from typing import Dict, Iterable, Set
 
 from swiftfire.artifacts.nets.petri_net import petri_net
 
@@ -27,17 +27,21 @@ class EnablementRule:
         return True
 
     @classmethod
-    def enabled_transitions(cls, net: petri_net.PetriNet, marking: Dict[int, int]) -> Set[int]:
+    def enabled_transitions(cls, net: petri_net.PetriNet, marking: Dict[int, int], transitions: Iterable[int] = None) -> Set[int]:
         """
         Returns the set of ids of enabled transitions given a Petri net and a marking.
         :param net: a Petri net
         :type net: swiftfire.artifacts.nets.petri_net.petri_net.PetriNet
         :param marking: the current marking of the Petri net
         :type marking: dictionary of integer: integer
+        :param transitions: the ids of transitions to be checked
+        :type transitions: iterable of integers
         :return: the set of ids of the enabled transitions in the net
         :rtype: set of integers
         """
-        return {transition for transition in net.transitions if EnablementRule.is_enabled(net, marking, transition)}
+        if transitions is None:
+            transitions = net.transitions
+        return {transition for transition in transitions if EnablementRule.is_enabled(net, marking, transition)}
 
 
 class EnablementRuleInhibitorArcs(EnablementRule):
@@ -45,8 +49,8 @@ class EnablementRuleInhibitorArcs(EnablementRule):
     Class defining enabled transitions in a Petri net with inhibitor arcs.
     """
 
-    @staticmethod
-    def is_enabled(net: petri_net.PetriNet, marking: Dict[int, int], transition: int) -> bool:
+    @classmethod
+    def is_enabled(cls, net: petri_net.PetriNet, marking: Dict[int, int], transition: int) -> bool:
         """
         Checks if a transition is enabled given a Petri net and a marking.
         :param net: a Petri net
