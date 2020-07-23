@@ -68,12 +68,16 @@ class SystemNet(labeled_petri_net.LabeledPetriNet):
                 raise ValueError('One or more final markings not valid.')
         self.__final_markings = map(defaultdict, repeat(int), final_markings)
 
+    def __get_enabled_transitions(self):
+        return self.__enabled_transitions
+
     def __get_configurations(self):
         return self.__configurations
 
     initial_marking = property(__get_initial_marking, __set_initial_marking)
     marking = property(__get_marking, __set_marking)
     final_markings = property(__get_final_markings, __set_final_markings)
+    enabled_transitions = property(__get_enabled_transitions)
     configurations = property(__get_configurations)
 
     def add_configuration(self, configuration_id: str, marking: Dict[int, int], final_markings: Iterable[Dict[int, int]]):
