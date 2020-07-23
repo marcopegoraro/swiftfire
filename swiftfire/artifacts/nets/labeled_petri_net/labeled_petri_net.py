@@ -16,7 +16,7 @@ class LabeledPetriNet(petri_net.PetriNet):
             super(LabeledPetriNet, self).__init__(places, transitions, arcs, inhibitor_arcs, reset_arcs)
         else:
             super(LabeledPetriNet, self).__init__(places, len(transitions), arcs, inhibitor_arcs, reset_arcs)
-            self.graph.nodes[self.transitions][label_id] = transitions
+            self.__graph.nodes[self.transitions][label_id] = transitions
         self.__enablement_rule = petri_net_enablement_rules.EnablementRule if inhibitor_arcs is None else petri_net_enablement_rules.EnablementRuleInhibitorArcs
         self.__firing_rule = labeled_petri_net_firing_rules.LabeledPetriNetFiringRuleResetArcs if reset_arcs is None else labeled_petri_net_firing_rules.LabeledPetriNetFiringRule
 
