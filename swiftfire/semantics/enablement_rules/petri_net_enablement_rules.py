@@ -40,7 +40,8 @@ class EnablementRule:
         :rtype: set of integers
         """
         if transitions is None:
-            transitions = net.transitions
+            non_empty_places = [place for place, tokens in marking.items() if tokens > 0]
+            transitions = net.postset(non_empty_places)
         return {transition for transition in transitions if EnablementRule.is_enabled(net, marking, transition)}
 
 
