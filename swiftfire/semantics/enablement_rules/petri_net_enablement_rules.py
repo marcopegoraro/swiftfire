@@ -8,8 +8,8 @@ class EnablementRule:
     Class defining enabled transitions in a Petri net.
     """
 
-    @staticmethod
-    def is_enabled(net: petri_net.PetriNet, marking: Dict[int, int], transition: int) -> bool:
+    @classmethod
+    def is_enabled(cls, net: petri_net.PetriNet, marking: Dict[int, int], transition: int) -> bool:
         """
         Checks if a transition is enabled given a Petri net and a marking.
         :param net: a Petri net
@@ -26,8 +26,8 @@ class EnablementRule:
                 return False
         return True
 
-    @staticmethod
-    def enabled_transitions(net: petri_net.PetriNet, marking: Dict[int, int]) -> Set[int]:
+    @classmethod
+    def enabled_transitions(cls, net: petri_net.PetriNet, marking: Dict[int, int]) -> Set[int]:
         """
         Returns the set of ids of enabled transitions given a Petri net and a marking.
         :param net: a Petri net
