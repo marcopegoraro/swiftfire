@@ -197,3 +197,16 @@ class PetriNet(dict):
             if not self.is_a_place(place) or not isinstance(tokens, int) or tokens < 0:
                 return False
         return True
+
+    def is_a_negative_marking(self, marking: Dict[int, int]) -> bool:  # TODO: Find a better name?
+        """
+        Checks if a marking is valid for the Petri net - places can be negative.
+        :param marking: the marking to be checked
+        :type marking: dictionary of integer: integer
+        :return: True if the marking is valid, False otherwise
+        :rtype: boolean
+        """
+        for place, tokens in marking.items():
+            if not self.is_a_place(place) or not isinstance(tokens, int):
+                return False
+        return True
