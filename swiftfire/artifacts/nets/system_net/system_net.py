@@ -1,8 +1,10 @@
 from typing import Iterable, Tuple, Dict
 from collections import defaultdict
 from itertools import repeat
+import warnings
 
 from swiftfire.artifacts.nets.labeled_petri_net import labeled_petri_net
+from swiftfire.identifiers import DEFAULT_CONFIG, INITIAL_MARKING, CURRENT_MARKING, ENABLED_TRANSITIONS, FINAL_MARKINGS
 
 
 class SystemNet(labeled_petri_net.LabeledPetriNet):
@@ -24,63 +26,16 @@ class SystemNet(labeled_petri_net.LabeledPetriNet):
         :param reset_arcs: the reset arcs in the net
         :type reset_arcs: iterable of 2-uples of integers
         """
-        # TODO: consider having a separate attribute current_marking, obtained as deepcopy of initial_marking (which stays constant)
         super().__init__(places, transitions, arcs, inhibitor_arcs, reset_arcs)
-        # if not self.is_a_marking(initial_marking):
-        #     raise ValueError('Initial marking not valid.')
-        # for marking in final_markings:
-        #     if not self.is_a_marking(marking):
-        #         raise ValueError('One or more final markings not valid.')
-        # if isinstance(initial_marking, defaultdict):
-        #     self.__initial_marking = initial_marking
-        # else:
-        #     self.__initial_marking = defaultdict(int, initial_marking)
-        # self.__final_markings = map(defaultdict, repeat(int), final_markings)
-        self.initial_marking = initial_marking
-        self.marking = self.initial_marking
-        self.final_markings = final_markings
-        self.__enabled_transitions = self.__enablement_rule.enabled_transitions(self, self.__initial_marking)
+        self.add_configuration(DEFAULT_CONFIG, initial_marking, final_markings)
         self.__configurations = dict()
-
-    def __get_initial_marking(self):
-        return self.__initial_marking
-
-    def __set_initial_marking(self, initial_marking: Dict[int, int] = None):
-        if not self.is_a_marking(initial_marking):
-            raise ValueError('Initial marking not valid.')
-        if isinstance(initial_marking, defaultdict):
-            self.__initial_marking = initial_marking
-        else:
-            self.__initial_marking = defaultdict(int, initial_marking)
-
-    def __get_marking(self):
-        return self.__marking
-
-    def __set_marking(self, marking: Dict[int, int] = None):
-        self.__marking = defaultdict(int, marking)
-
-    def __get_final_markings(self):
-        return self.__initial_marking
-
-    def __set_final_markings(self, final_markings: Iterable[Dict[int, int]] = None):
-        for marking in final_markings:
-            if not self.is_a_marking(marking):
-                raise ValueError('One or more final markings not valid.')
-        self.__final_markings = map(defaultdict, repeat(int), final_markings)
-
-    def __get_enabled_transitions(self):
-        return self.__enabled_transitions
 
     def __get_configurations(self):
         return self.__configurations
 
-    initial_marking = property(__get_initial_marking, __set_initial_marking)
-    marking = property(__get_marking, __set_marking)
-    final_markings = property(__get_final_markings, __set_final_markings)
-    enabled_transitions = property(__get_enabled_transitions)
     configurations = property(__get_configurations)
 
-    def add_configuration(self, configuration_id: str, marking: Dict[int, int], final_markings: Iterable[Dict[int, int]]):
+    def add_configuration(self, configuration_id: str, initial_marking: Dict[int, int], final_markings: Iterable[Dict[int, int]]):
         """
         Adds a configuration to the configuration dictionary of the system net.
         :param configuration_id: the identifier of the configuration to add
@@ -92,7 +47,7 @@ class SystemNet(labeled_petri_net.LabeledPetriNet):
         :return: None
         :rtype: NoneType
         """
-        self.add_configurations([(configuration_id, marking, final_markings)])
+        self.add_configurations(((configuration_id, initial_marking, final_markings),))
 
     def add_configurations(self, configurations: Iterable[Tuple[str, Dict[int, int], Iterable[Dict[int, int]]]]):
         """
@@ -102,18 +57,21 @@ class SystemNet(labeled_petri_net.LabeledPetriNet):
         :return: None
         :rtype: NoneType
         """
-        for configuration_id, marking, final_markings in configurations:
+        for configuration_id, initial_marking, final_markings in configurations:
             if configuration_id is None or configuration_id is '':
                 raise ValueError('Configuration id must be a nonempty string.')
             for c_id in self.__configurations:
                 if c_id == configuration_id:
                     raise ValueError('Configuration identifier already in use.')
-            if not self.is_a_marking(marking):
+            if not self.is_a_marking(initial_marking):
                 raise ValueError('Initial marking not valid.')
             for final_marking in final_markings:
                 if not self.is_a_marking(final_marking):
                     raise ValueError('One or more final markings not valid.')
-            self.__configurations[configuration_id] = [marking, self.__enablement_rule.enabled_transitions(self, marking), map(defaultdict, repeat(int), final_markings)]
+            self.__configurations[configuration_id][INITIAL_MARKING] = initial_marking
+            self.__configurations[configuration_id][CURRENT_MARKING] = defaultdict(int, initial_marking)
+            self.__configurations[configuration_id][ENABLED_TRANSITIONS] = self.__enablement_rule.enabled_transitions(self, initial_marking)
+            self.__configurations[configuration_id][FINAL_MARKINGS] = map(defaultdict, repeat(int), final_markings)
 
     def delete_configuration(self, configuration_id: str):
         """
@@ -123,7 +81,10 @@ class SystemNet(labeled_petri_net.LabeledPetriNet):
         :return: None
         :rtype: NoneType
         """
-        del self.__configurations[configuration_id]
+        if configuration_id == DEFAULT_CONFIG:
+            warnings.warn('Deletion of default configuration skipped', RuntimeWarning)
+        else:
+            del self.__configurations[configuration_id]
 
     def delete_configurations(self, configurations: Iterable[str]):
         """
@@ -135,3 +96,24 @@ class SystemNet(labeled_petri_net.LabeledPetriNet):
         """
         for configuration_id in configurations:
             self.delete_configuration(configuration_id)
+
+    def reset_configuration(self, configuration_id: str):
+        """
+        Resets a configuration to the initial marking from the configuration dictionary of the system net.
+        :param configuration_id: the identifier of the configuration to reset
+        :type configuration_id: string
+        :return: None
+        :rtype: NoneType
+        """
+        self.__configurations[configuration_id][CURRENT_MARKING] = defaultdict(int, self.__configurations[configuration_id][INITIAL_MARKING])
+
+    def reset_configurations(self, configurations: Iterable[str]):
+        """
+        Resets an iterable of configurations to the initial marking from the configuration dictionary of the system net.
+        :param configurations: an iterable of configuration identifiers
+        :type configurations: iterable of strings
+        :return: None
+        :rtype: NoneType
+        """
+        for configuration_id in configurations:
+            self.reset_configuration(configuration_id)
