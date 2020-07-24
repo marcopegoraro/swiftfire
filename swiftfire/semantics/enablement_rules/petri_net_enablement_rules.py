@@ -40,8 +40,9 @@ class EnablementRule:
         :rtype: set of integers
         """
         if transitions is None:
-            non_empty_places = [place for place, tokens in marking.items() if tokens > 0]
-            transitions = net.postset(non_empty_places)
+            # TODO: use this method whenever the parameters of the nets and marking and the number of transitions to check makes it faster than using enabled_transition
+            empty_places = net.places - {place for place, tokens in marking.items() if tokens < 0}
+            return net.transitions - net.postset(empty_places)
         return {transition for transition in transitions if EnablementRule.is_enabled(net, marking, transition)}
 
 
