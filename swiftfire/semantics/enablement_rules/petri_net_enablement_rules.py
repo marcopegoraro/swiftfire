@@ -41,9 +41,28 @@ class EnablementRule:
         """
         if transitions is None:
             # TODO: use this method whenever the parameters of the nets and marking and the number of transitions to check makes it faster than using enabled_transition
-            empty_places = net.places - {place for place, tokens in marking.items() if tokens < 0}
+            empty_places = net.places - {place for place, tokens in marking.items() if tokens < 1}
             return net.transitions - net.postset(empty_places)
         return {transition for transition in transitions if EnablementRule.is_enabled(net, marking, transition)}
+
+    @classmethod
+    def enabled_after_firing(cls, net: petri_net.PetriNet, transition: int, enabled_transitions: Iterable[int], marking: Dict[int, int]) -> Iterable[int]:
+        """
+        Given a Petri net, a marking, a transition enabled in that marking and the resulting marking after firing the transition, updates the set of enabled transitions.
+        :param net: a Petri net
+        :type net: swiftfire.artifacts.nets.petri_net.petri_net.PetriNet
+        :param transition: an enabled transition
+        :type transition: int
+        :param enabled_transitions: the transitions enabled by the starting marking
+        :type enabled_transitions: iterable of integers
+        :param marking: the marking after firing the transition
+        :type marking: dictionary of integer: integer
+        :return: the updated set of enabled transitions
+        :rtype: set of integers
+        """
+        enabled_transitions -= net.postset({place for place in net.preset(transition) if marking[place] < 1})
+        enabled_transitions += cls.enabled_transitions(net, marking, net.postset(net.postset(transition)))
+        return enabled_transitions
 
 
 class EnablementRuleInhibitorArcs(EnablementRule):
